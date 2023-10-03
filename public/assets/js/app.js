@@ -13,8 +13,11 @@ const app = {
     console.log('app.init !');
 
     app.addListenerToActions();
+    
     await app.getListsFromAPI();
+    app.editListenerToActions();
   },
+
   // Initialisation des événements
   addListenerToActions() {
     // je récupère mon bouton par son id
@@ -35,6 +38,14 @@ const app = {
     // j'ajoute l'événement click sur mes boutons "+"
     // document.querySelectorAll(".is-pulled-right").forEach(button => button.addEventListener("click", app.showAddCardModal));
   },
+
+  //*Evénements editions listes
+  editListenerToActions() {
+    document.querySelector('h2').addEventListener("dblclick", listModule.showEditListForm);
+
+    document.querySelector("#formEditList").addEventListener("keyup", listModule.handleEditForm);
+  },
+
   // Récupération des listes et des cartes
   async getListsFromAPI() {
     let response;

@@ -1,16 +1,24 @@
 import cardModule from "./card.js";
 
 export default {
-    base_url: null,
+    base_url:"http://localhost:3000",
     setBaseUrl(url) {
         // this est le contexte - correspond à mon module
         this.base_url = url;
     },
+
     // Ouverture de la popup pour ajouter une liste
     showAddModal() {
         // j'ajoute la class "is-active" qui permet d'afficher la modal
         document.querySelector("#addListModal").classList.add("is-active");
     },
+
+    //*gestion de l'apparition du formulaire d'édition
+    showEditListForm() {
+        document.querySelector('h2').classList.add("is-hidden");
+        document.querySelector('#formEditList').classList.remove("is-hidden");
+    },
+
     // Gestion du formulaire pour ajouter une liste
     async handleAddForm(event) {
         // Je stoppe le comportement par défaut
@@ -33,7 +41,7 @@ export default {
         let response;
         try {
             // J'envoie les données du formulaire à l'API
-            response = await fetch(`${base_url}/lists`, {
+            response = await fetch(`${this.base_url}/lists`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -50,15 +58,16 @@ export default {
             const list = await response.json();
 
             // J'ajoute le code HTML
-            app.makeListInDOM(list);
+            this.makeInDOM(list);
         }
 
         // je reset le formulaire
         event.target.reset();
 
         // Je masque la modal
-        app.hideModals();
+        this.hideModals();
     },
+
     // Ajout d'une liste HTML dans notre page
     makeInDOM(list) {
         // Je récupère le template
@@ -81,4 +90,46 @@ export default {
         const listContainer = document.querySelector("#lists");
         listContainer.insertBefore(newList, listContainer.firstChild);
     },
+
+    //*Gestion formulaire pour edition liste
+
+    async handleEditForm(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        const object = {};
+        formData.forEach((value, key) => object[key] = value);
+
+        const json = JSON.stringify(object);
+
+        let response;
+
+        try {
+            response = await fetch(`${this.base_url}/lists`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: json
+            });
+        } catch (err) {
+            console.log(err);
+        }
+
+        if (response && response.ok) {
+            const listId = formData.get('list-id'); // Récupérez l'identifiant de la liste depuis le formulaire
+            const h2Element = document.querySelector(`[data-list-id="${listId}"] h2`);
+            h2Element.textContent = object['list-name']; // Utilisez le nom de la liste provenant du formulaire
+    
+        } else {
+            const listId = formData.get('list-id'); // Récupérez l'identifiant de la liste depuis le formulaire
+            const h2Element = document.querySelector(`[data-list-id="${listId}"] h2`);
+            h2Element.classList.remove("is-hidden");
+    
+            document.querySelector('#formEditList').classList.add("is-hidden");
+        }
+
+        
+    }
 };
