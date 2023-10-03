@@ -3,6 +3,7 @@ export default {
     setBaseUrl(url) {
         this.base_url = url;
     },
+    
     // Ouverture de la popup pour ajouter une carte
     showAddModal(event) {
 
@@ -19,6 +20,7 @@ export default {
         // j'ajoute la class "is-active" qui permet d'afficher la modal
         cardModal.classList.add("is-active");
     },
+
     async handleAddForm(event) {
         // Je stoppe le comportement par défaut
         event.preventDefault();
@@ -66,6 +68,7 @@ export default {
         // Je masque la modal
         app.hideModals();
     },
+    
     // Ajout d'une carte HTML dans notre page
     makeInDOM(card) {
         // Je récupère le template
